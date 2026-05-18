@@ -997,23 +997,6 @@
       }
     },
     {
-      "name": "DeepSeek-R1-0528-Instr",
-      "files": {
-        "python": "python.jsonl",
-        "php": "php.jsonl",
-        "kotlin": "kotlin.jsonl",
-        "csharp": "csharp.jsonl",
-        "typescript": "typescript.jsonl",
-        "go": "go.jsonl",
-        "rust": "rust.jsonl",
-        "cpp": "cpp.jsonl",
-        "java": "java.jsonl",
-        "scala": "scala.jsonl",
-        "javascript": "javascript.jsonl",
-        "ruby": "ruby.jsonl"
-      }
-    },
-    {
       "name": "Qwen2.5-Coder-32B-Instr",
       "files": {
         "python": "python.jsonl",
@@ -1337,6 +1320,23 @@
       }
     },
     {
+      "name": "Gpt-oss-20B (High)",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
+    {
       "name": "Qwen3-30B-A3B-Instr-2507",
       "files": {
         "python": "python.jsonl",
@@ -1357,9 +1357,36 @@
       "name": "GLM-4.5-Air",
       "files": {
         "python": "python.jsonl",
-        "cpp": "cpp.jsonl"
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
       }
     },
+    {
+      "name": "GLM-4.7-Flash",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
     {
       "name": "GLM-5-FP8",
       "files": {
@@ -1485,6 +1512,23 @@
         "ruby": "ruby.jsonl"
       }
     },
+    {
+      "name": "Qwen3.6-27B",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
     {
       "name": "Qwen3.6-35B-A3B",
       "files": {

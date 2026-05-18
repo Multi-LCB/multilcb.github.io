@@ -102,6 +102,23 @@
       }
     },
     {
+      "name": "Qwen3.6-27B",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
+    {
       "name": "GLM-4.7",
       "files": {
         "python": "python.jsonl",
@@ -118,6 +135,40 @@
         "ruby": "ruby.jsonl"
       }
     },
+    {
+      "name": "GLM-4.7-Flash",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },      
+    {
+      "name": "GLM-4.5-Air",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
     {
       "name": "GLM-5.1-FP8",
       "files": {
@@ -136,7 +187,24 @@
       }
     },    
     {
-      "name": "gpt-oss-120b",
+      "name": "gpt-oss-20b (High)",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
+    {
+      "name": "gpt-oss-120b (High)",
       "files": {
         "python": "python.jsonl",
         "php": "php.jsonl",
@@ -237,6 +305,23 @@
         "ruby": "ruby.jsonl"
       }
     },
+    {
+      "name": "DeepSeek-R1-0528",
+      "files": {
+        "python": "python.jsonl",
+        "php": "php.jsonl",
+        "kotlin": "kotlin.jsonl",
+        "csharp": "csharp.jsonl",
+        "typescript": "typescript.jsonl",
+        "go": "go.jsonl",
+        "rust": "rust.jsonl",
+        "cpp": "cpp.jsonl",
+        "java": "java.jsonl",
+        "scala": "scala.jsonl",
+        "javascript": "javascript.jsonl",
+        "ruby": "ruby.jsonl"
+      }
+    },    
     {
       "name": "Qwen3-1.7B",
       "files": {
