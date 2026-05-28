@@ -1810,9 +1810,9 @@ async function loadAllData() {
           date: dayTs,
           task_id: rec.task_id,
         };
-        // Initialize all lang columns to 0
+        // Initialize all lang columns to null (no data); 0 means tested-and-failed
         for (const col of Object.values(JSONL_LANG_TO_COL)) {
-          modelData[model][key][col] = 0;
+          modelData[model][key][col] = null;
         }
       }
       modelData[model][key][colName] = rec.pass;
@@ -2092,12 +2092,21 @@ function summarize(data) {
     let avgSum = 0, avgCount = 0;
     LANGUAGES.forEach(l => {
       const key = `pass@1[${l}]`;
-      const val = mean(rows.map(r => r[key] ?? 0)) * 100;
-      result[key] = val;
-      // Only include in avg if the language is active AND the model has data for it (val > 0)
-      if (activeLangs.has(l) && val > 0) { avgSum += val; avgCount++; }
+      // Only count rows that actually have data for this language (non-null).
+      // A row contains exactly one non-null lang column; others remain null.
+      const langValues = rows.map(r => r[key]).filter(v => v != null);
+      if (langValues.length === 0) {
+        // No matching tasks for this language under the current filter → dash.
+        result[key] = null;
+      } else {
+        const val = (langValues.reduce((a, b) => a + b, 0) / langValues.length) * 100;
+        result[key] = val;
+        // Include in avg whenever the language is active and has matching tasks,
+        // even if all tasks failed (val === 0).
+        if (activeLangs.has(l)) { avgSum += val; avgCount++; }
+      }
     });
-    result["pass@1[avg]"] = avgCount > 0 ? avgSum / avgCount : 0;
+    result["pass@1[avg]"] = avgCount > 0 ? avgSum / avgCount : null;
     return result;
   });
 
@@ -2113,7 +2122,14 @@ function summarize(data) {
 
   // lcb_agentic: default sort by python; others: by avg
   const defaultSortKey = currentDataset === 'lcb_agentic' ? 'pass@1[python]' : 'pass@1[avg]';
-  summary.sort((a, b) => b[defaultSortKey] - a[defaultSortKey]);
+  summary.sort((a, b) => {
+    const av = a[defaultSortKey], bv = b[defaultSortKey];
+    // Push rows with no data (null) to the bottom regardless of direction.
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return bv - av;
+  });
   summary.forEach((r, i) => { r.modelIdx = i + 1; });
   return summary;
 }
@@ -2171,6 +2187,10 @@ function renderTable() {
   if (currentSortKey && sortDirection) {
     data.sort((a, b) => {
       const av = a[currentSortKey], bv = b[currentSortKey];
+      // Rows with no data (null) always sink to the bottom.
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
       if (av < bv) return sortDirection === "asc" ? -1 : 1;
       if (av > bv) return sortDirection === "asc" ? 1 : -1;
       return 0;
@@ -2207,13 +2227,13 @@ function renderTable() {
   // Calculate max tasks to determine which models have subsets
   const maxTasks = Math.max(...data.map(r => r.n_task));
   
-  // Count how many languages each model has (non-zero values)
+  // Count how many languages each model has data for (null = no matching tasks)
   const modelLangCounts = {};
   data.forEach(row => {
     let langCount = 0;
     LANGUAGES.forEach(l => {
       const key = `pass@1[${l}]`;
-      if (row[key] > 0) langCount++;
+      if (row[key] != null) langCount++;
     });
     modelLangCounts[row.model] = langCount;
   });
@@ -2256,16 +2276,23 @@ function renderTable() {
     
     tr.appendChild(tdM);
     // avg
-    const tdA = document.createElement("td"); tdA.textContent = row["pass@1[avg]"].toFixed(1);
-    tdA.style.fontWeight = "700"; tdA.style.color = "#a5b4fc"; tr.appendChild(tdA);
+    const tdA = document.createElement("td");
+    const avgVal = row["pass@1[avg]"];
+    tdA.textContent = avgVal == null ? '—' : avgVal.toFixed(1);
+    tdA.style.fontWeight = "700";
+    tdA.style.color = avgVal == null ? '#64748b' : '#a5b4fc';
+    tr.appendChild(tdA);
     // per lang
     aLangs.forEach(l => {
       const td = document.createElement("td");
       const val = row[`pass@1[${l}]`];
-      td.textContent = val > 0 ? val.toFixed(1) : '—';
-      if (val === 0) {
+      if (val == null) {
+        // No tasks matched the current filter for this language.
+        td.textContent = '—';
         td.style.color = '#64748b';
       } else {
+        // Show the numeric score, including 0 when all matched tasks failed.
+        td.textContent = val.toFixed(1);
         // Gradient color from low to high values (0-100) - very subtle, low values invisible
         const ratio = val / 100;
         // Low values (< 20%) are almost invisible, only high values get noticeable highlighting
@@ -2618,19 +2645,22 @@ function renderScatterChart() {
   });
 
   const points = base.map(row => {
-    const xVal = row[xKey] ?? 0;
-    const yVal = row[yKey] ?? 0;
-    // Count non-zero languages for this model
+    const xRaw = row[xKey];
+    const yRaw = row[yKey];
+    const xVal = xRaw ?? 0;
+    const yVal = yRaw ?? 0;
+    // Count languages with actual data (null = no matching tasks)
     let langCount = 0;
-    LANGUAGES.forEach(l => { if (row[`pass@1[${l}]`] > 0) langCount++; });
+    LANGUAGES.forEach(l => { if (row[`pass@1[${l}]`] != null) langCount++; });
     const allLangs = langCount >= 12;
     const allData = row.n_task >= maxTasks;
     return {
       x: xVal, y: yVal,
+      xRaw, yRaw,
       model: row.model,
       allData, allLangs,
     };
-  }).filter(p => p.x > 0 || p.y > 0);
+  }).filter(p => p.xRaw != null && p.yRaw != null);
 
   // Determine marker shape and color for each point
   // Chart.js pointStyle: 'circle', 'rectRot' (diamond), 'rect' (square), 'triangle'
@@ -2777,7 +2807,7 @@ function renderCompareChips() {
     chip.style.background = color.chip;
     chip.style.borderColor = color.border;
     const row = summary.find(r => r.model === model);
-    const avgText = row ? ` (${row["pass@1[avg]"].toFixed(1)}%)` : '';
+    const avgText = row && row["pass@1[avg]"] != null ? ` (${row["pass@1[avg]"].toFixed(1)}%)` : '';
     chip.innerHTML = `
       <span class="chip-dot" style="background:${color.border}"></span>
       <span>${model}${avgText}</span>
@@ -2819,7 +2849,8 @@ function filterCompareDropdown() {
   filtered.forEach(row => {
     const item = document.createElement('div');
     item.className = 'compare-dropdown-item';
-    item.innerHTML = `<span>${row.model}</span><span class="dd-avg">${row["pass@1[avg]"].toFixed(1)}%</span>`;
+    const avgStr = row["pass@1[avg]"] == null ? '—' : `${row["pass@1[avg]"].toFixed(1)}%`;
+    item.innerHTML = `<span>${row.model}</span><span class="dd-avg">${avgStr}</span>`;
     item.onclick = () => selectCompareModel(row.model);
     list.appendChild(item);
   });
@@ -2856,7 +2887,7 @@ function renderRadarChart() {
   const datasets = compareSelectedModels.map((modelName, idx) => {
     const row = summary.find(r => r.model === modelName);
     const color = COMPARE_COLORS[idx % COMPARE_COLORS.length];
-    const data = LANGUAGES.map(l => row ? row[`pass@1[${l}]`] : 0);
+    const data = LANGUAGES.map(l => row ? (row[`pass@1[${l}]`] ?? 0) : 0);
     return {
       label: modelName,
       data,
@@ -2975,14 +3006,19 @@ function renderBarplotChart() {
       
       if (!monthData || monthData.length === 0) return null;
       
-      // Calculate average pass@1 across active languages
+      // Calculate average pass@1 across active languages, counting only rows
+      // that have data for that language (null = no matching tasks).
       let avgSum = 0, avgCount = 0;
       LANGUAGES.forEach(l => {
+        if (!activeLangs.has(l)) return;
         const key = `pass@1[${l}]`;
-        const val = mean(monthData.map(r => r[key] ?? 0)) * 100;
-        if (activeLangs.has(l) && val > 0) { avgSum += val; avgCount++; }
+        const vals = monthData.map(r => r[key]).filter(v => v != null);
+        if (vals.length === 0) return;
+        const val = (vals.reduce((a, b) => a + b, 0) / vals.length) * 100;
+        avgSum += val;
+        avgCount++;
       });
-      return avgCount > 0 ? avgSum / avgCount : 0;
+      return avgCount > 0 ? avgSum / avgCount : null;
     });
     
     return {
